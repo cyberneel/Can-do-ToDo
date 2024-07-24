@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { Container, Row, Col } from 'react-bootstrap';
 import TodoList from './components/TodoList';
 import TodoForm from './components/TodoForm';
 import './App.css';
@@ -25,11 +26,18 @@ const App = () => {
   };
 
   return (
-    <div className="App">
-      <h1>Todo List</h1>
-      <TodoForm addTodo={addTodo} />
-      <TodoList todos={todos} toggleTodo={toggleTodo} />
-    </div>
+    <Container className="my-5">
+      <Row>
+        <Col md={4}>
+          <h1 className="text-center mb-4">Add Todo</h1>
+          <TodoForm addTodo={addTodo} />
+        </Col>
+        <Col md={8}>
+          <h1 className="text-center mb-4">Todo List</h1>
+          <TodoList todos={todos} toggleTodo={toggleTodo} />
+        </Col>
+      </Row>
+    </Container>
   );
 };
 
