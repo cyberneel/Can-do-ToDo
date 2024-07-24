@@ -8,6 +8,7 @@ import './App.css';
 const App = () => {
   const [todos, setTodos] = useState([]);
   const [canvasTasks, setCanvasTasks] = useState([]);
+  const [userData, setUserData] = useState(null);
   const [canvasToken, setCanvasToken] = useState('');
   const [error, setError] = useState(null);
 
@@ -29,26 +30,30 @@ const App = () => {
     );
   };
 
-  const fetchCanvasTasks = async () => {
+  const fetchCanvasData = async () => {
     if (!canvasToken) {
       setError('Please provide a Canvas API token.');
       return;
     }
 
     try {
-      const tasks = await canvasService.getTasks(canvasToken);
-      setCanvasTasks(tasks);
+      const user = await canvasService.getUserData(canvasToken);
+      setUserData(user);
+
+      const courses = await canvasService.getCourses(canvasToken);
+
+      const assignments = [];
+      for (const course of courses) {
+        const courseAssignments = await canvasService.getAssignments(course.id);
+        assignments.push(...courseAssignments);
+      }
+
+      setCanvasTasks(assignments);
       setError(null);
     } catch (error) {
-      setError('Failed to fetch tasks from Canvas. Please check your token and try again.');
+      setError('Failed to fetch data from Canvas. Please check your token and try again.');
     }
   };
-
-  useEffect(() => {
-    if (canvasToken) {
-      fetchCanvasTasks();
-    }
-  }, [canvasToken]);
 
   return (
     <Container className="my-5">
@@ -65,9 +70,14 @@ const App = () => {
             onChange={(e) => setCanvasToken(e.target.value)}
             className="form-control mb-2"
           />
-          <Button variant="primary" onClick={fetchCanvasTasks} block>
-            Fetch Canvas Tasks
+          <Button variant="primary" onClick={fetchCanvasData} block>
+            Fetch Canvas Data
           </Button>
+          {userData && (
+            <div className="mt-4">
+              <h2 className="text-center mb-4">Welcome, {userData.name}!</h2>
+            </div>
+          )}
           {canvasTasks.length > 0 && (
             <div className="mt-4">
               <h2 className="text-center mb-4">Canvas Tasks</h2>
