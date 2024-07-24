@@ -1,4 +1,5 @@
 import React from 'react';
+import { Card, FormCheck } from 'react-bootstrap';
 
 const TodoItem = ({ todo, toggleTodo }) => {
   const handleTodoClick = () => {
@@ -16,14 +17,22 @@ const TodoItem = ({ todo, toggleTodo }) => {
   };
 
   return (
-    <li>
-      <input
-        type="checkbox"
-        checked={todo.completed}
-        onChange={handleTodoClick}
-      />
-      {todo.text} - {calculateTimeRemaining(todo.dateTime)}
-    </li>
+    <Card className={`mb-3 ${todo.completed ? 'bg-light' : ''} masonry-item`}>
+      <Card.Body className="d-flex justify-content-between align-items-center">
+        <div>
+          <FormCheck
+            type="checkbox"
+            checked={todo.completed}
+            onChange={handleTodoClick}
+            className="mr-2"
+          />
+          <span className={todo.completed ? 'text-decoration-line-through' : ''}>
+            {todo.text}
+          </span>
+        </div>
+        <span className="text-muted small">{calculateTimeRemaining(todo.dateTime)}</span>
+      </Card.Body>
+    </Card>
   );
 };
 
