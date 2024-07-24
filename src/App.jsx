@@ -45,7 +45,9 @@ const App = () => {
   };
 
   useEffect(() => {
-    fetchCanvasTasks();
+    if (canvasToken) {
+      fetchCanvasTasks();
+    }
   }, [canvasToken]);
 
   return (

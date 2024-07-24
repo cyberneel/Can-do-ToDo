@@ -1,31 +1,57 @@
-import axios from 'axios';
-
-const API_URL = 'https://unt.instructure.com/api/v1'; // this url depends on campus
+const API_URL = 'unt.instructure.com'; // Replace with your Canvas instance URL
+const API_EXT = '/api/v1'; // API extension
 
 const canvasService = {
-  getTasks: async (token) => {
+  getUserData: async (token) => {
     try {
-      const response = await axios.get(`${API_URL}/courses`, {
-        headers: {
-          Authorization: `Bearer ${token}`
-        }
+      const response = await fetch(`https://${API_URL}${API_EXT}/users/self?access_token=${token}`, {
+        method: 'GET'
       });
 
-      const courses = response.data;
-
-      const tasks = [];
-      for (const course of courses) {
-        const assignments = await axios.get(`${API_URL}/courses/${course.id}/assignments`, {
-          headers: {
-            Authorization: `Bearer ${token}`
-          }
-        });
-        tasks.push(...assignments.data);
+      if (!response.ok) {
+        throw new Error(`HTTP error! Status: ${response.status}`);
       }
 
-      return tasks;
+      const data = await response.json();
+      return data;
     } catch (error) {
-      console.error('Error fetching tasks from Canvas:', error);
+      console.error('Error fetching user data from Canvas:', error);
+      throw error;
+    }
+  },
+
+  getCourses: async (token) => {
+    try {
+      const response = await fetch(`https://${API_URL}${API_EXT}/courses?access_token=${token}`, {
+        method: 'GET'
+      });
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! Status: ${response.status}`);
+      }
+
+      const data = await response.json();
+      return data;
+    } catch (error) {
+      console.error('Error fetching courses from Canvas:', error);
+      throw error;
+    }
+  },
+
+  getAssignments: async (token, courseId) => {
+    try {
+      const response = await fetch(`https://${API_URL}${API_EXT}/courses/${courseId}/assignments?access_token=${token}`, {
+        method: 'GET'
+      });
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! Status: ${response.status}`);
+      }
+
+      const data = await response.json();
+      return data;
+    } catch (error) {
+      console.error('Error fetching assignments from Canvas:', error);
       throw error;
     }
   }
